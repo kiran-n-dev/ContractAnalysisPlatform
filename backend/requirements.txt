@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+psycopg2-binary
+SQLAlchemy
+python-jose[cryptography]
+passlib[bcrypt]
+boto3
+python-dotenv
+google-generativeai
+python-multipart
+python-dotenv
