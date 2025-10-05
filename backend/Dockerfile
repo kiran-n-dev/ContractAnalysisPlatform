@@ -4,9 +4,6 @@ FROM python:3.9-slim-buster
 # Set the working directory in the container
 WORKDIR /app
 
-# Add /app to PYTHONPATH so Python can find the 'backend' package
-ENV PYTHONPATH=/app
-
 # Copy the requirements file to the working directory
 COPY requirements.txt .
 
@@ -20,4 +17,5 @@ COPY . .
 EXPOSE 8000
 
 # Command to run the application
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Explicitly add the current directory (where 'backend' folder is) to PYTHONPATH
+CMD ["bash", "-c", "PYTHONPATH=$PYTHONPATH:/app uvicorn backend.main:app --host 0.0.0.0 --port 8000"]

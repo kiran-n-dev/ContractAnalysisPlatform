@@ -1,27 +1,27 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18-alpine
+# Stage 1: Builder
+FROM node:18-alpine as builder
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
 COPY . .
 
-# Build the React app for production
 RUN npm run build
 
-# Serve the app with a static server (e.g., serve)
+# Stage 2: Runner
+FROM node:18-alpine
+
+WORKDIR /app
+
 # Install serve globally
 RUN npm install -g serve
 
-# Expose the port the app runs on
+# Copy the build output from the builder stage
+COPY --from=builder /app/build ./build
+
 EXPOSE 3000
 
-# Command to run the app, explicitly serving from /app/build
-CMD ["serve", "-s", "/app/build", "-l", "3000"]
+CMD ["serve", "-s", "build", "-l", "3000"]
