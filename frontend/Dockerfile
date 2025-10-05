@@ -9,8 +9,8 @@ RUN npm install
 
 COPY . .
 
-# Run npm build with increased verbosity and check for build directory
-RUN npm run build --verbose && ls -l /app
+# Run npm build using npx to ensure react-scripts is found
+RUN npx react-scripts build --verbose && ls -l /app
 
 # Stage 2: Runner
 FROM node:18-alpine
@@ -21,7 +21,10 @@ WORKDIR /app
 RUN npm install -g serve
 
 # Copy the build output from the builder stage
-COPY --from=builder /app/build ./build
+COPY --from=builder /app/build /app/build
+
+# Verify build directory in runner stage
+RUN ls -l /app
 
 EXPOSE 3000
 
