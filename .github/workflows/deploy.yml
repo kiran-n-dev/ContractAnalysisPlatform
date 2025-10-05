@@ -28,21 +28,15 @@ jobs:
             
             # 1. Stop and Clean up old deployment
             echo "Removing old deployment..."
-            if [ -d "$DEPLOY_DIR" ]; then
-              cd "$DEPLOY_DIR" && docker-compose down
-              sudo rm -rf ~/ContractAnalysisPlatform
-            fi
-            
-            # Assuming ~/dc.sh is a cleanup script, ensure it's non-interactive and safe
-            # If it's not essential or causes issues, consider removing or modifying it.
-            
-            ~/dc.sh # Run your cleanup script (ensure this doesn't hang)
+            docker-compose -f ~/ContractAnalysisPlatform/docker-compose.yml down
+            sudo rm -rf ~/ContractAnalysisPlatform
+            ~/dc.sh
             
             echo "Loding new deployment..."
             
             # 2. Clone new code
             git clone https://github.com/kiran-n-dev/ContractAnalysisPlatform.git
-            cd "$DEPLOY_DIR"
+            cd ContractAnalysisPlatform
             
             # 3. Copy the .env file from EC2 home to the backend directory
             echo "Copying .env file from EC2 home directory to backend/ ..."
