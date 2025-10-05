@@ -20,7 +20,7 @@ jobs:
           
           # The commands to run on the EC2 instance
           script: |
-            DEPLOY_DIR="Contract-Analysis-Platform"
+            DEPLOY_DIR="ContractAnalysisPlatform"
             APP_URL="http://${{ secrets.EC2_SSH_HOST }}:3000/" # The public URL/IP to check
             
             echo "Successfully connected to EC2 instance."
@@ -40,7 +40,7 @@ jobs:
             echo "Loding new deployment..."
             
             # 2. Clone new code
-            git clone https://github.com/kiran-n-dev/Contract-Analysis-Platform.git
+            git clone https://github.com/kiran-n-dev/ContractAnalysisPlatform.git
             cd "$DEPLOY_DIR"
             
             # 3. Start containers in detached mode and rebuild
@@ -86,3 +86,5 @@ jobs:
                 echo "Deployment finished. Application is fully LIVE and ready for traffic."
                 exit 0 # Exit with success code
             fi
+
+
