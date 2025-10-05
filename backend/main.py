@@ -1,9 +1,9 @@
 from fastapi import FastAPI
+from backend import models
+from backend.database import engine
+from backend.auth import router as auth_router
+from backend.documents import router as documents_router
 from fastapi.middleware.cors import CORSMiddleware
-from . import models
-from .database import engine
-from .auth import router as auth_router
-from .documents import router as documents_router
 
 models.Base.metadata.create_all(bind=engine)
 
