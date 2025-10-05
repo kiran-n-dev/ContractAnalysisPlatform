@@ -9,7 +9,7 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build
+RUN set -e && npm run build
 
 FROM nginx:1.21.3-alpine
 
