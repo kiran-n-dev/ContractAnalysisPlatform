@@ -1,0 +1,88 @@
+name: Deploy to EC2 Securely
+
+on:
+  push:
+    branches:
+      - main # Trigger on push to the 'main' branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+
+      - name: Deploy via SSH # Use a secure, pre-built action for SSH
+        uses: appleboy/ssh-action@v1.0.1 
+        with:
+          host: ${{ secrets.EC2_SSH_HOST }} 
+          username: ${{ secrets.EC2_SSH_USERNAME }} 
+          password: ${{ secrets.EC2_SSH_PASSWORD }}
+          
+          # The commands to run on the EC2 instance
+          script: |
+            DEPLOY_DIR="Contract-Analysis-Platform"
+            APP_URL="http://${{ secrets.EC2_SSH_HOST }}:3000/" # The public URL/IP to check
+            
+            echo "Successfully connected to EC2 instance."
+            
+            # 1. Stop and Clean up old deployment
+            echo "Removing old deployment..."
+            if [ -d "$DEPLOY_DIR" ]; then
+              cd "$DEPLOY_DIR" && docker compose down
+              cd ..
+              rm -rf "$DEPLOY_DIR"
+            fi
+            
+            # Assuming ~/dc.sh is a cleanup script, ensure it's non-interactive and safe
+            # If it's not essential or causes issues, consider removing or modifying it.
+            # ~/dc.sh # Run your cleanup script (ensure this doesn't hang)
+            
+            echo "Loding new deployment..."
+            
+            # 2. Clone new code
+            git clone https://github.com/kiran-n-dev/Contract-Analysis-Platform.git
+            cd "$DEPLOY_DIR"
+            
+            # 3. Start containers in detached mode and rebuild
+            # Pass secrets as environment variables to docker-compose
+            echo "Starting Docker Compose up (in detached mode and rebuilding)..."
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            AWS_REGION=${{ secrets.AWS_REGION }} \
+            S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} \
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+            DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
+            docker compose up --build -d
+            
+            # 4. **THE FIX**: Implement a cURL Polling Loop to check for 200 status
+            MAX_ATTEMPTS=40  # Max wait time (e.g., 40 attempts * 5 seconds = 200 seconds)
+            ATTEMPTS=0
+            
+            echo "Deployment in progress. Waiting for application readiness at ${APP_URL}..."
+            
+            while [ $ATTEMPTS -lt $MAX_ATTEMPTS ]; do
+                # Use curl to get the HTTP status code. 
+                # -s: Silent mode. -o /dev/null: Discard output. -w: Write out the status code.
+                HTTP_CODE=$(curl -s -o /dev/null -w "%{{http_code}}" ${APP_URL})
+                
+                # Check if the returned status code is 200
+                if [ "$HTTP_CODE" -eq 200 ]; then
+                    echo "🎉 Application is ready! Received status code 200 from ${APP_URL}."
+                    break
+                fi
+                
+                # If not ready, wait and increment counter
+                echo "Deployment in progress... (Attempt $((ATTEMPTS + 1)))/${MAX_ATTEMPTS}) Status code: ${HTTP_CODE}. Retrying in 5 seconds."
+                sleep 5 
+                ATTEMPTS=$((ATTEMPTS + 1))
+            done
+            
+            # 5. Check final status and exit
+            if [ $ATTEMPTS -eq $MAX_ATTEMPTS ]; then
+                echo "❌ Deployment **FAILED**: Application did not return a 200 status code within the time limit."
+                exit 1 # Exit with error code to fail the GitHub job
+            else
+                echo "Deployment finished. Application is fully LIVE and ready for traffic."
+                exit 0 # Exit with success code
+            fi
