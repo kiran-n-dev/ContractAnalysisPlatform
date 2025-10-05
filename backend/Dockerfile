@@ -4,6 +4,9 @@ FROM python:3.9-slim-buster
 # Set the working directory in the container
 WORKDIR /app
 
+# Add /app to PYTHONPATH so Python can find the 'backend' package
+ENV PYTHONPATH=/app
+
 # Copy the requirements file to the working directory
 COPY requirements.txt .
 
