@@ -2,14 +2,16 @@ import React from 'react';
 import { useDocuments } from '../../hooks/useDocuments';
 
 interface SidebarProps {
-  onAnalyzeDocument: (fileKey: string) => void;
+  onAnalyzeDocument?: (fileKey: string) => void; // Made optional
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onAnalyzeDocument }) => {
   const { documents, loading, error } = useDocuments();
 
   const handleViewAnalysisClick = (fileKey: string) => {
-    onAnalyzeDocument(fileKey);
+    if (onAnalyzeDocument) {
+      onAnalyzeDocument(fileKey);
+    }
   };
 
   return (
@@ -31,6 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onAnalyzeDocument }) => {
               <button 
                 onClick={() => handleViewAnalysisClick(doc.key)} 
                 className="bg-primary text-white px-3 py-1 rounded text-sm"
+                disabled={!onAnalyzeDocument} // Disable button if no handler is provided
               >
                 View Analysis
               </button>
