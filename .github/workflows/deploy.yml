@@ -47,7 +47,7 @@ jobs:
             
             # 3. Copy the .env file from EC2 home to the backend directory
             echo "Copying .env file from EC2 home directory to backend/ ..."
-            cp "~/.env" "./backend/.env"
+            cp "/home/ec2-user/.env" "./backend/.env"
             
             # 4. Start containers in detached mode and rebuild
             echo "Starting Docker Compose up (in detached mode and rebuilding)..."
