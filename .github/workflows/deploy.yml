@@ -14,14 +14,14 @@ jobs:
       - name: Deploy via SSH # Use a secure, pre-built action for SSH
         uses: appleboy/ssh-action@v1.0.1 
         with:
-          host: 35.154.166.158
-          username: ${{ secrets.EC2_SSH_USERNAME }} 
-          password: ${{ secrets.EC2_SSH_PASSWORD }}
+          host: 3.111.215.123
+          username: ec2-user 
+          password: toor
           
           # The commands to run on the EC2 instance
           script: |
             DEPLOY_DIR="ContractAnalysisPlatform"
-            APP_URL="http://35.154.166.158:3000/" # The public URL/IP to check
+            APP_URL="http://3.111.215.123:3000/" # The public URL/IP to check
             
             
             echo "Successfully connected to EC2 instance."
@@ -29,7 +29,7 @@ jobs:
             # 1. Stop and Clean up old deployment
             echo "Removing old deployment..."
             if [ -d "$DEPLOY_DIR" ]; then
-              cd "$DEPLOY_DIR" && docker compose down
+              cd "$DEPLOY_DIR" && docker-compose down
               cd ..
               rm -rf "$DEPLOY_DIR"
             fi
@@ -47,11 +47,11 @@ jobs:
             
             # 3. Copy the .env file from EC2 home to the backend directory
             echo "Copying .env file from EC2 home directory to backend/ ..."
-            cp "/root/.env" "./backend/.env"
+            cp "~/.env" "./backend/.env"
             
             # 4. Start containers in detached mode and rebuild
             echo "Starting Docker Compose up (in detached mode and rebuilding)..."
-            docker compose up --build -d
+            docker-compose up --build -d
             
             # 5. Implement a cURL Polling Loop to check for 200 status
             MAX_ATTEMPTS=40  # Max wait time (e.g., 40 attempts * 5 seconds = 200 seconds)
