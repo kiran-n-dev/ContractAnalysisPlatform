@@ -14,14 +14,14 @@ jobs:
       - name: Deploy via SSH # Use a secure, pre-built action for SSH
         uses: appleboy/ssh-action@v1.0.1 
         with:
-          host: ${{ secrets.EC2_SSH_HOST }} 
+          host: 35.154.166.158
           username: ${{ secrets.EC2_SSH_USERNAME }} 
           password: ${{ secrets.EC2_SSH_PASSWORD }}
           
           # The commands to run on the EC2 instance
           script: |
-            DEPLOY_DIR="Contract-Analysis-Platform"
-            APP_URL="http://${{ secrets.EC2_SSH_HOST }}:3000/" # The public URL/IP to check
+            DEPLOY_DIR="ContractAnalysisPlatform"
+            APP_URL="http://35.154.166.158:3000/" # The public URL/IP to check
             EC2_HOME_DIR="~" # Assuming the .env is in the home directory of the SSH user
             
             echo "Successfully connected to EC2 instance."
@@ -42,7 +42,7 @@ jobs:
             echo "Loding new deployment..."
             
             # 2. Clone new code
-            git clone https://github.com/kiran-n-dev/Contract-Analysis-Platform.git
+            git clone https://github.com/kiran-n-dev/ContractAnalysisPlatform.git
             cd "$DEPLOY_DIR"
             
             # 3. Copy the .env file from EC2 home to the backend directory
