@@ -8,7 +8,7 @@ interface Document {
   last_modified: string;
 }
 
-const useDocuments = () => {
+export const useDocuments = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,5 +32,3 @@ const useDocuments = () => {
 
   return { documents, loading, error, getDocuments };
 };
-
-export default useDocuments;
