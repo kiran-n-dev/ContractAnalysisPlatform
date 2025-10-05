@@ -22,7 +22,7 @@ jobs:
           script: |
             DEPLOY_DIR="ContractAnalysisPlatform"
             APP_URL="http://35.154.166.158:3000/" # The public URL/IP to check
-            EC2_HOME_DIR="~" # Assuming the .env is in the home directory of the SSH user
+            
             
             echo "Successfully connected to EC2 instance."
             
@@ -47,7 +47,7 @@ jobs:
             
             # 3. Copy the .env file from EC2 home to the backend directory
             echo "Copying .env file from EC2 home directory to backend/ ..."
-            cp "$EC2_HOME_DIR/.env" "./backend/.env"
+            cp "/root/.env" "./backend/.env"
             
             # 4. Start containers in detached mode and rebuild
             echo "Starting Docker Compose up (in detached mode and rebuilding)..."
