@@ -5,12 +5,12 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm cache clean --force && npm install
 
 COPY . .
 
 # Run npm build using npx to ensure react-scripts is found
-RUN npx react-scripts build --verbose && ls -l /app
+RUN set -e && npx react-scripts build --verbose && ls -l /app
 
 # Stage 2: Runner
 FROM node:18-alpine
