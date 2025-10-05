@@ -30,8 +30,7 @@ jobs:
             echo "Removing old deployment..."
             if [ -d "$DEPLOY_DIR" ]; then
               cd "$DEPLOY_DIR" && docker-compose down
-              cd ..
-              rm -rf "$DEPLOY_DIR"
+              sudo rm -rf ~/ContractAnalysisPlatform
             fi
             
             # Assuming ~/dc.sh is a cleanup script, ensure it's non-interactive and safe
