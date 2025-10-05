@@ -9,7 +9,8 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build
+# Run npm build with increased verbosity and check for build directory
+RUN npm run build --verbose && ls -l /app
 
 # Stage 2: Runner
 FROM node:18-alpine
