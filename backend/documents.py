@@ -2,13 +2,12 @@ from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 import json
-
 import models
 from schemas import Document
 from database import get_db
-from .auth import get_current_user
-from .s3_utils import upload_file_to_s3, list_files_in_s3_folder, get_file_from_s3
-from .gemini_llm import get_gemini_response
+from auth import get_current_user
+from s3_utils import upload_file_to_s3, list_files_in_s3_folder, get_file_from_s3
+from gemini_llm import get_gemini_response
 
 router = APIRouter()
 
