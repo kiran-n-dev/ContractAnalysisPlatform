@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List
 import json
 
-from . import models, schemas
-from .database import get_db
+import models
+from schemas import Document
+from database import get_db
 from .auth import get_current_user
 from .s3_utils import upload_file_to_s3, list_files_in_s3_folder, get_file_from_s3
 from .gemini_llm import get_gemini_response
@@ -26,7 +27,7 @@ async def upload_document(file: UploadFile = File(...), current_user: models.Use
         raise HTTPException(status_code=500, detail="Failed to upload file to S3")
     return {"message": "File uploaded successfully", "filename": file.filename}
 
-@router.get("/list", response_model=List[schemas.Document])
+@router.get("/list", response_model=List[Document])
 async def list_documents(current_user: models.User = Depends(get_current_user)):
     files = list_files_in_s3_folder(current_user.username)
     return files

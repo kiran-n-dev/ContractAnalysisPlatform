@@ -1,31 +1,22 @@
-# Stage 1: Builder
-FROM node:18-alpine as builder
+
+FROM node:16-alpine as build
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm cache clean --force && npm install
+RUN npm install
 
 COPY . .
 
-# Run npm build using npx to ensure react-scripts is found
-RUN set -e && npx react-scripts build --verbose && ls -l /app
+RUN npm run build
 
-# Stage 2: Runner
-FROM node:18-alpine
+FROM nginx:1.21.3-alpine
 
-WORKDIR /app
+COPY --from=build /app/build /usr/share/nginx/html
 
-# Install serve globally
-RUN npm install -g serve
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy the build output from the builder stage
-COPY --from=builder /app/build /app/build
+EXPOSE 80
 
-# Verify build directory in runner stage
-RUN ls -l /app
-
-EXPOSE 3000
-
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["nginx", "-g", "daemon off;"]
